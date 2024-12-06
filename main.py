@@ -14,6 +14,21 @@ contas = [
     },
 
     {
+        'cliente': 'Regina Silva',
+        'saldo': 10.0
+    },
+
+    {
+        'cliente': 'Enmily Silva',
+        'saldo': 10.0
+    },
+
+    {
+        'cliente': 'Maria Pereira',
+        'saldo': 10.0
+    },
+
+    {
         'cliente': 'Edilson Silva',
         'saldo': 10.0
     }
