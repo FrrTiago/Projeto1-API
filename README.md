@@ -134,7 +134,7 @@ Esta é uma API REST desenvolvida em Python utilizando o framework Flask para ge
 - Resposta (200):
   ```json
   {
-    "mensagem": "Conta removida com sucesso."
+    "mensagem": "A Conta foi removida com sucesso."
   }
   ```
 
