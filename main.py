@@ -4,17 +4,17 @@ app = Flask(__name__)
 
 contas = [
     {
-        'cliente': 'Joao Dario',
+        'cliente': 'Tiago Silva',
         'saldo': 10.0
     },
 
     {
-        'cliente': 'Lucas Augusto',
+        'cliente': 'Sandro Pereira',
         'saldo': 10.0
     },
 
     {
-        'cliente': 'Thiago Rosa',
+        'cliente': 'Edilson Silva',
         'saldo': 10.0
     }
 ]
