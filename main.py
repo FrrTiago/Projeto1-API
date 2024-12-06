@@ -1,94 +1,98 @@
 from flask import Flask, jsonify, request
 
-obj = Flask(__name__)
+app = Flask(__name__)
 
-# Vetor para armazenar as contas correntes
-contas = []
+contas = [
+    {
+        'cliente': 'Joao Dario',
+        'saldo': 10.0
+    },
 
-# Rota para criar uma conta
-@obj.route('/contas', methods=['POST'])
+    {
+        'cliente': 'Lucas Augusto',
+        'saldo': 10.0
+    },
+
+    {
+        'cliente': 'Thiago Rosa',
+        'saldo': 10.0
+    }
+]
+
+
+# Criar Conta
+@app.route('/contas', methods=['POST'])
 def criar_conta():
-    dados = request.json
-    cliente = dados.get('cliente')
+    cliente = request.get_json()
+    nova_conta = {
+        'cliente': cliente,
+        'saldo': 10.0
+    }
+    contas.append(nova_conta)
+    return 'Conta criada', 200
 
-    if not cliente:
-        return jsonify({"erro": "O identificador do cliente é obrigatório."}), 400
+# Creditar Valor
+@app.route('/contas/<cliente>/creditar', methods=['PUT'])
+def creditar_valor(cliente):
+    valor = request.get_json()
+    for conta in contas:
+        if conta['cliente'] == cliente:
+            conta['saldo'] += valor
+            return 'Valor adicionado ao saldo', 200
+    return 'Cliente não encontrado', 404
 
-    if any(conta['cliente'] == cliente for conta in contas):
-        return jsonify({"erro": "Já existe uma conta para este cliente."}), 400
+# Debitar Valor
+@app.route('/contas/<cliente>/debitar', methods=['PUT'])
+def debitar_valor(cliente):
+    valor = request.get_json()
+    for conta in contas:
+        if conta['cliente'] == cliente:
+            if conta['saldo'] < valor:
+                return 'Saldo insuficiente', 400
+            conta['saldo'] -= valor
+            return 'Valor removido do saldo', 200
+    return 'Cliente não encontrado', 404
 
-    conta = {"cliente": cliente, "saldo": 10.0}
-    contas.append(conta)
-    return jsonify({"mensagem": "Conta criada com sucesso.", "conta": conta}), 201
-
-# Rota para creditar valor na conta
-@obj.route('/contas/<cliente>/creditar', methods=['PUT'])
-def creditar(cliente):
-    dados = request.json
-    valor = dados.get('valor')
-
-    if not isinstance(valor, (int, float)) or valor <= 0:
-        return jsonify({"erro": "Valor inválido para crédito."}), 400
-
-    conta = next((c for c in contas if c['cliente'] == cliente), None)
-    if not conta:
-        return jsonify({"erro": "Conta não encontrada."}), 404
-
-    conta['saldo'] += valor
-    return jsonify({"mensagem": "Valor creditado com sucesso.", "conta": conta}), 200
-
-# Rota para debitar valor na conta
-@obj.route('/contas/<cliente>/debitar', methods=['PUT'])
-def debitar(cliente):
-    dados = request.json
-    valor = dados.get('valor')
-
-    if not isinstance(valor, (int, float)) or valor <= 0:
-        return jsonify({"erro": "Valor inválido para débito."}), 400
-
-    conta = next((c for c in contas if c['cliente'] == cliente), None)
-    if not conta:
-        return jsonify({"erro": "Conta não encontrada."}), 404
-
-    if conta['saldo'] < valor:
-        return jsonify({"erro": "Saldo insuficiente."}), 400
-
-    conta['saldo'] -= valor
-    return jsonify({"mensagem": "Valor debitado com sucesso.", "conta": conta}), 200
-
-# Rota para ver detalhes de uma conta
-@obj.route('/contas/<cliente>', methods=['GET'])
+# Ver Conta
+@app.route('/contas/<cliente>', methods=['GET'])
 def ver_conta(cliente):
-    conta = next((c for c in contas if c['cliente'] == cliente), None)
-    if not conta:
-        return jsonify({"erro": "Conta não encontrada."}), 404
+    for conta in contas:
+        if conta['cliente'] == cliente:
+            return jsonify(conta), 200
+    return 'Cliente não encontrado', 404
 
-    return jsonify(conta), 200
-
-# Rota para ver o saldo de uma conta
-@obj.route('/contas/<cliente>/saldo', methods=['GET'])
+# Ver Saldo
+@app.route('/contas/<cliente>/saldo', methods=['GET'])
 def ver_saldo(cliente):
-    conta = next((c for c in contas if c['cliente'] == cliente), None)
-    if not conta:
-        return jsonify({"erro": "Conta não encontrada."}), 404
+    for conta in contas:
+        if conta['cliente'] == cliente:
+            return jsonify(conta['saldo']), 200
+    return 'Cliente não encontrado', 404
 
-    return jsonify({"saldo": conta['saldo']}), 200
+# Ver Saldo
+@app.route('/contas/<cliente>/saldo', methods=['GET'])
+def ver_saldo(cliente):
+    for conta in contas:
+        if conta['cliente'] == cliente:
+            return jsonify(conta['saldo']), 200
+    return 'Cliente não encontrado', 404
 
-# Rota para exibir todas as contas
-@obj.route('/contas', methods=['GET'])
+# Exibir Contas
+@app.route('/contas', methods=['GET'])
 def exibir_contas():
+    if not contas:
+        return 'Não há contas registradas', 404
     return jsonify(contas), 200
 
-# Rota para deletar uma conta
-@obj.route('/contas/<cliente>', methods=['DELETE'])
+# Deletar Conta
+@app.route('/contas/<cliente>', methods=['DELETE'])
 def deletar_conta(cliente):
-    global contas
-    conta = next((c for c in contas if c['cliente'] == cliente), None)
-    if not conta:
-        return jsonify({"erro": "Conta não encontrada."}), 404
+    for i, conta in contas:
+        if conta['cliente'] == cliente:
+            del contas[i]
+            return 'Conta deletada', 200
+    return 'Cliente não encontrado', 404
 
-    contas = [c for c in contas if c['cliente'] != cliente]
-    return jsonify({"mensagem": "Conta deletada com sucesso."}), 200
 
 if __name__ == '__main__':
-    obj.run(debug=True)
+    app.run(port=500, host='localhost', debug=True)
