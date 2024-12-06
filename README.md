@@ -1,146 +1,208 @@
 # API de Gerenciamento de Contas Correntes
 
-Esta é uma API REST desenvolvida em Python utilizando o framework Flask para gerenciamento de contas correntes. A API permite criar, visualizar, atualizar e excluir contas, além de realizar operações de crédito e débito.
+Esta é uma API REST simples desenvolvida em Python utilizando Flask, que permite o gerenciamento de contas correntes com operações como criação, consulta, crédito, débito e exclusão.
 
 ## Funcionalidades
-- **Criar Conta (POST /contas):** Cria uma nova conta com um saldo inicial de R$10,00.
-- **Creditar Valor (PUT /contas/<cliente>/creditar):** Adiciona um valor ao saldo da conta do cliente.
-- **Debitar Valor (PUT /contas/<cliente>/debitar):** Subtrai um valor do saldo da conta do cliente, se houver saldo suficiente.
-- **Ver Conta (GET /contas/<cliente>):** Retorna os detalhes da conta do cliente específico.
-- **Ver Saldo (GET /contas/<cliente>/saldo):** Retorna apenas o saldo da conta do cliente.
-- **Exibir Contas (GET /contas):** Lista todas as contas cadastradas no sistema.
-- **Deletar Conta (DELETE /contas/<cliente>):** Remove uma conta específica com base no identificador do cliente.
 
-## Pré-requisitos
+- **Criar Conta**: Cria uma nova conta para um cliente com saldo inicial de R$10,00.
+- **Creditar Valor**: Adiciona um valor ao saldo de uma conta.
+- **Debitar Valor**: Subtrai um valor do saldo, se houver saldo suficiente.
+- **Consultar Conta**: Retorna os detalhes de uma conta específica.
+- **Consultar Saldo**: Retorna apenas o saldo de uma conta específica.
+- **Listar Contas**: Exibe todas as contas cadastradas.
+- **Excluir Conta**: Remove uma conta do sistema.
+
+## Tecnologias Utilizadas
+
+- Python 3.8+
+- Flask
+- Flasgger (para documentação Swagger)
+
+---
+
+## Requisitos
+
 - Python 3.8 ou superior
-- Pip (gerenciador de pacotes do Python)
+- `pip` instalado para gerenciar pacotes Python
+
+---
 
 ## Instalação
-1. Clone este repositório:
+
+1. Clone o repositório:
    ```bash
-   git clone <URL_DO_REPOSITORIO>
+   git clone https://github.com/seu-repositorio/api-contas.git
+   cd api-contas
    ```
-2. Navegue até o diretório do projeto:
-   ```bash
-   cd <DIRETORIO_DO_PROJETO>
-   ```
-3. Crie um ambiente virtual:
+
+2. Crie um ambiente virtual:
    ```bash
    python -m venv venv
+   source venv/bin/activate   # Linux/MacOS
+   venv\Scripts\activate      # Windows
    ```
-4. Ative o ambiente virtual:
-   - Windows:
-     ```bash
-     venv\Scripts\activate
-     ```
-   - Linux/MacOS:
-     ```bash
-     source venv/bin/activate
-     ```
-5. Instale as dependências:
+
+3. Instale as dependências:
    ```bash
-   pip install flask
+   pip install -r requirements.txt
    ```
+
+   O arquivo `requirements.txt` deve conter:
+   ```
+   Flask
+   Flasgger
+   ```
+
+---
 
 ## Execução
-1. Execute o arquivo principal da aplicação:
+
+1. Execute a aplicação:
    ```bash
-   python <NOME_DO_ARQUIVO>.py
+   python app.py
    ```
-2. A API estará disponível em `http://127.0.0.1:5000`.
 
-## Endpoints
-### Criar Conta
-**POST** `/contas`
-- Corpo da requisição (JSON):
+2. Acesse a API no endereço:
+   ```
+   http://localhost:5000
+   ```
+
+3. Acesse a documentação interativa (Swagger):
+   ```
+   http://localhost:5000/apidocs
+   ```
+
+---
+
+## Endpoints da API
+
+### 1. **Criar Conta**
+- **URL**: `/contas`
+- **Método**: `POST`
+- **Corpo da Requisição**:
   ```json
   {
-    "cliente": "nome_do_cliente"
+    "cliente": "Nome do Cliente"
   }
   ```
-- Resposta (201):
+- **Resposta de Sucesso**:
   ```json
   {
-    "cliente": "nome_do_cliente",
-    "saldo": 10.0
+    "mensagem": "Conta criada com sucesso.",
+    "conta": {
+      "cliente": "Nome do Cliente",
+      "saldo": 10.0
+    }
   }
   ```
 
-### Creditar Valor
-**PUT** `/contas/<cliente>/creditar`
-- Corpo da requisição (JSON):
-  ```json
-  {
-    "valor": 100.0
-  }
-  ```
-- Resposta (200):
-  ```json
-  {
-    "cliente": "nome_do_cliente",
-    "saldo": 110.0
-  }
-  ```
+---
 
-### Debitar Valor
-**PUT** `/contas/<cliente>/debitar`
-- Corpo da requisição (JSON):
+### 2. **Creditar Valor**
+- **URL**: `/contas/<cliente>/creditar`
+- **Método**: `PUT`
+- **Corpo da Requisição**:
   ```json
   {
     "valor": 50.0
   }
   ```
-- Resposta (200):
+- **Resposta de Sucesso**:
   ```json
   {
-    "cliente": "nome_do_cliente",
-    "saldo": 60.0
+    "mensagem": "Valor creditado com sucesso.",
+    "conta": {
+      "cliente": "Nome do Cliente",
+      "saldo": 60.0
+    }
   }
   ```
 
-### Ver Conta
-**GET** `/contas/<cliente>`
-- Resposta (200):
+---
+
+### 3. **Debitar Valor**
+- **URL**: `/contas/<cliente>/debitar`
+- **Método**: `PUT`
+- **Corpo da Requisição**:
   ```json
   {
-    "cliente": "nome_do_cliente",
+    "valor": 20.0
+  }
+  ```
+- **Resposta de Sucesso**:
+  ```json
+  {
+    "mensagem": "Valor debitado com sucesso.",
+    "conta": {
+      "cliente": "Nome do Cliente",
+      "saldo": 40.0
+    }
+  }
+  ```
+
+---
+
+### 4. **Consultar Conta**
+- **URL**: `/contas/<cliente>`
+- **Método**: `GET`
+- **Resposta de Sucesso**:
+  ```json
+  {
+    "cliente": "Nome do Cliente",
     "saldo": 10.0
   }
   ```
 
-### Ver Saldo
-**GET** `/contas/<cliente>/saldo`
-- Resposta (200):
+---
+
+### 5. **Consultar Saldo**
+- **URL**: `/contas/<cliente>/saldo`
+- **Método**: `GET`
+- **Resposta de Sucesso**:
   ```json
   {
     "saldo": 10.0
   }
   ```
 
-### Exibir Contas
-**GET** `/contas`
-- Resposta (200):
+---
+
+### 6. **Listar Contas**
+- **URL**: `/contas`
+- **Método**: `GET`
+- **Resposta de Sucesso**:
   ```json
   [
-    {
-      "cliente": "nome_do_cliente",
-      "saldo": 10.0
-    }
+    {"cliente": "Cliente 1", "saldo": 10.0},
+    {"cliente": "Cliente 2", "saldo": 15.0}
   ]
   ```
 
-### Deletar Conta
-**DELETE** `/contas/<cliente>`
-- Resposta (200):
+---
+
+### 7. **Excluir Conta**
+- **URL**: `/contas/<cliente>`
+- **Método**: `DELETE`
+- **Resposta de Sucesso**:
   ```json
   {
-    "mensagem": "A Conta foi removida com sucesso."
+    "mensagem": "Conta deletada com sucesso."
   }
   ```
 
-## Testes
-Utilize ferramentas como [Postman](https://www.postman.com/) ou [cURL](https://curl.se/) para realizar testes nos endpoints da API.
+---
 
-Exemplo de requisição usando cURL:
-```bash
-curl -X POST http://127.0.0.1:5000/contas -H "Content-Type: application/json" -d '{"cliente": "cliente1"}'
+## Testando a API
+
+Você pode testar a API utilizando ferramentas como:
+- [Postman](https://www.postman.com/)
+- [Insomnia](https://insomnia.rest/)
+- A interface interativa do **Swagger** (`http://localhost:5000/apidocs`)
+
+---
+
+Sinta-se à vontade para usar o projeto e modificá-lo conforme necessário.
+
+---
+
+Se precisar de mais informações ou ajuda, é só entrar em contato! 😊
